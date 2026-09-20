@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.DS_Store
+
+# Airflow local run artifacts
+airflow.db
+airflow.cfg
+logs/
+airflow-webserver.pid
+
+# Generated output (keep folder, ignore contents)
+output/*.png
+!output/.gitkeep

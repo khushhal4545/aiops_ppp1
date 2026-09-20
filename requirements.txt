@@ -1,0 +1,8 @@
+# Q1 - anomaly detection / plotting
+matplotlib>=3.7
+
+# Q2, Q3, Q5 - Kafka
+kafka-python>=2.0.2
+
+# Q4 - Airflow (heavy install; only needed if running the DAG locally)
+apache-airflow>=2.9
