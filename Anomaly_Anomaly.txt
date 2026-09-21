@@ -1,0 +1,702 @@
+1. Environment check — SABSE PEHLE
+Command 1
+pwd
+
+Isse pata chalega tum kis directory mein ho.
+
+Command 2
+ls
+
+Windows PowerShell mein dir bhi chalega, lekin Codespace/Linux terminal mein ls use karo.
+
+Command 3
+find . -maxdepth 3 -type f | sort
+
+Ye repository ke files dikhayega.
+
+Command 4
+git status
+
+Expected type output:
+
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+2. Python environment check
+Python version
+python --version
+
+Agar ye work na kare:
+
+python3 --version
+Pip
+pip --version
+
+ya:
+
+pip3 --version
+Git
+git --version
+3. Repository mein requirements check
+
+Pehle:
+
+find . -maxdepth 3 -iname "requirements*.txt" -o -iname "pyproject.toml" -o -iname "environment.yml"
+
+Agar requirements.txt milta hai, uski location ke according:
+
+pip install -r requirements.txt
+
+Agar kisi task folder ke andar hai:
+
+pip install -r taskX/requirements.txt
+
+Exact path output dekhkar hi use karna.
+
+4. Recommended Python virtual environment
+
+Agar repository mein already environment instructions nahi hain, Codespace mein:
+
+python3 -m venv .venv
+
+Activate:
+
+source .venv/bin/activate
+
+Check:
+
+which python
+
+Expected something like:
+
+/workspaces/aiops-exam-369874125/.venv/bin/python
+
+Then:
+
+python --version
+
+Upgrade pip:
+
+python -m pip install --upgrade pip
+5. Basic dependencies
+
+Ye blindly install mat karo agar repo ka requirements.txt already available hai.
+
+Likely AIOps tasks ke liye packages ho sakte hain:
+
+pip install pandas numpy scikit-learn
+
+Task-specific requirements ke according aur packages ho sakte hain.
+
+Check installed:
+
+pip list
+6. Repository ko samjho — code change se pehle
+
+Ab:
+
+find . -maxdepth 3 -type f | sort
+
+Aur:
+
+find . -maxdepth 2 -type d | sort
+
+README dekho:
+
+cat README.md
+
+Agar README bahut long ho:
+
+sed -n '1,200p' README.md
+7. TASK 1 — Log Parsing + Rule-Based Anomaly Detection
+
+Tumhare MSE structure ke according Task 1 mein log file aur Python log-analysis code hai.
+
+Pehle actual files locate karo:
+
+find . -iname "*log*" -o -iname "*task1*"
+
+Example:
+
+application.log
+task1_log_parsing/
+task1_log_parsing/log_analysis.py
+Log dekho
+
+Agar file root mein hai:
+
+cat application.log
+
+Ya:
+
+sed -n '1,100p' application.log
+Python file dekho
+cat task1_log_parsing/log_analysis.py
+
+Yahan pehle actual code samjhenge.
+
+Run:
+
+python task1_log_parsing/log_analysis.py
+
+Agar Python path issue aaye:
+
+python3 task1_log_parsing/log_analysis.py
+8. Task 1 output validate
+
+Tumhe check karna hai:
+
+Total ERROR lines
+Error per minute
+> 3 errors/minute = anomaly
+Output expected logic ke according aa raha hai ya nahi
+
+Check exit status:
+
+echo $?
+
+Expected:
+
+0
+9. Task 1 Git checkpoint
+
+Sirf jab Task 1 correctly complete/verified ho.
+
+git status
+
+Then:
+
+git add .
+
+Commit:
+
+git commit -m "feat: task 1 completed log parsing and error counter"
+
+Push:
+
+git push
+
+Check:
+
+git status
+10. TASK 2 — Isolation Forest
+
+Task 2 locate karo:
+
+find . -iname "*isolation*" -o -iname "*task2*"
+
+Files dekho:
+
+find . -maxdepth 3 -type f | sort
+
+Task 2 Python file:
+
+cat <actual_task2_file>.py
+
+⚠️ <actual_task2_file>.py ko literally mat likhna. Actual filename use karna.
+
+11. Task 2 dependencies
+
+Check:
+
+python -c "import sklearn; print(sklearn.__version__)"
+
+Numpy:
+
+python -c "import numpy; print(numpy.__version__)"
+
+Pandas:
+
+python -c "import pandas; print(pandas.__version__)"
+
+Agar missing:
+
+pip install scikit-learn numpy pandas
+12. Task 2 run
+
+Actual file milne ke baad:
+
+python <task2_file>.py
+
+Task 2 mein generally Isolation Forest result dekhenge:
+
+1  = Normal
+-1 = Anomaly
+
+Aur unusual response time / CPU values identify honi chahiye.
+
+13. Task 2 validate
+
+Check:
+
+echo $?
+
+Then:
+
+git status
+
+Agar task complete:
+
+git add .
+git commit -m "feat: task 2 completed isolation forest anomaly detection"
+git push
+14. TASK 3 — Airflow
+
+Task 3 locate:
+
+find . -iname "*airflow*" -o -iname "*dag*" -o -iname "*task3*"
+
+DAG files:
+
+find . -type f | grep -iE "dag|airflow|task3"
+
+DAG code:
+
+cat <dag_file>.py
+15. Airflow environment check
+
+Check:
+
+airflow version
+
+Agar command available hai, version show hoga.
+
+Agar nahi:
+
+which airflow
+
+Agar repository requirements mein Airflow diya hua hai, requirements install karo.
+
+16. Airflow DAG validation
+
+DAG folder ka actual path identify karne ke baad:
+
+airflow dags list
+
+DAG list mein apna DAG check karo.
+
+Then:
+
+airflow dags list-import-errors
+
+Agar:
+
+No data
+
+ya no import errors type result aaye, good.
+
+Specific DAG:
+
+airflow dags list | grep -i <dag_name>
+17. Airflow task validation
+
+DAG ke actual task names check karo.
+
+Expected workflow tumhare assessment mein:
+
+collect_data
+      ↓
+process_data
+      ↓
+detect_anomalies
+      ↓
+saving_results
+
+Airflow DAG details:
+
+airflow tasks list <dag_id>
+
+Then individual task testing:
+
+airflow tasks test <dag_id> collect_data <date>
+
+etc.
+
+⚠️ Exact DAG ID aur date actual repo ke according use karenge.
+
+18. Airflow UI
+
+Agar assessment instructions ke according Airflow UI required hai, usually:
+
+airflow standalone
+
+Ye terminal ko running process mein rakh sakta hai.
+
+Us terminal ko band nahi karna.
+
+Codespaces mein forwarded port/browser URL mil sakta hai.
+
+Airflow UI mein:
+
+DAG
+ ↓
+collect_data
+ ↓
+process_data
+ ↓
+detect_anomalies
+ ↓
+saving_results
+
+verify karna hai.
+
+19. TASK 3 Git checkpoint
+
+Validation successful hone ke baad:
+
+git status
+git add .
+git commit -m "feat: task 3 completed airflow monitoring dag"
+git push
+20. TASK 4 — Kafka Producer + Consumer
+
+Task 4 locate:
+
+find . -iname "*kafka*" -o -iname "*producer*" -o -iname "*consumer*" -o -iname "*task4*"
+
+Files:
+
+find . -type f | grep -iE "kafka|producer|consumer|task4"
+
+Producer code:
+
+cat <producer_file>.py
+
+Consumer:
+
+cat <consumer_file>.py
+21. Kafka check
+
+Check whether Kafka is already provided/configured:
+
+find . -maxdepth 3 -type f | grep -i kafka
+
+Also:
+
+java -version
+22. Kafka topic
+
+Assessment mein topic expected hai:
+
+server-telemetry
+
+Producer → topic → consumer flow:
+
+Producer
+   ↓
+server-telemetry
+   ↓
+Consumer
+   ↓
+AIOps Output
+
+Important: exact Kafka commands repository ki configuration par depend karenge. Isliye pehle producer/consumer code dekhna zaroori hai.
+
+23. Producer run
+
+Actual producer filename ke according:
+
+python <producer_file>.py
+
+Producer event/message send karega.
+
+24. Consumer run
+
+Second terminal kholo.
+
+Then:
+
+python <consumer_file>.py
+
+Consumer ko producer se events receive karne chahiye.
+
+Expected type output:
+
+OK
+
+ya:
+
+CRITICAL ALERT
+
+CPU threshold assessment mein:
+
+cpu_usage > 80
+
+critical condition hai.
+
+25. End-to-End validation
+
+Ab overall chain verify karni hai:
+
+Operational Data
+       ↓
+Metrics / Logs
+       ↓
+Anomaly Detection
+       ↓
+Event Generation
+       ↓
+Producer
+       ↓
+server-telemetry
+       ↓
+Consumer
+       ↓
+AIOps Output
+
+Tumhe evidence/screenshot lene hain:
+
+Evidence 1
+
+Repository/files
+
+Evidence 2
+
+Task 1 output
+
+Evidence 3
+
+Task 2 anomaly output
+
+Evidence 4
+
+Airflow DAG/tasks
+
+Evidence 5
+
+Kafka producer
+
+Evidence 6
+
+Kafka consumer/final output
+
+26. Tests / validation
+
+Repository mein tests locate:
+
+find . -type f | grep -iE "test_|_test|tests"
+
+Agar pytest tests hain:
+
+pytest
+
+Agar requirements mein pytest nahi:
+
+python -m pytest
+
+Agar repo mein custom validation script hai, use:
+
+python <validation_file>.py
+27. Final Git check
+
+Sabse important:
+
+git status
+
+Then:
+
+git diff
+
+Modified files check:
+
+git diff --stat
+
+Untracked files:
+
+git status --short
+28. README update
+
+README mein actual work document karna hai:
+
+# AIOps Practical Assessment
+
+## Project Overview
+
+This project demonstrates a Python-based AIOps workflow for
+operational data analysis, anomaly detection, event generation,
+event production, event consumption, and final alert processing.
+
+## Repository Components
+
+- Task 1: Log parsing and rule-based anomaly detection
+- Task 2: Isolation Forest anomaly detection
+- Task 3: Airflow monitoring DAG
+- Task 4: Kafka producer and consumer
+
+## Operational Data Analysis
+
+[Actual observations]
+
+## Anomaly Detection
+
+[Actual observations]
+
+## Event Generation
+
+[Actual observations]
+
+## Producer → Topic → Consumer
+
+[Actual observations]
+
+## Troubleshooting
+
+### Issue Identified
+
+[Actual issue]
+
+### Root Cause
+
+[Actual root cause]
+
+### Correction
+
+[Actual correction]
+
+## Validation
+
+[Actual test/run results]
+
+## End-to-End Workflow
+
+Operational Data
+→ Anomaly Detection
+→ Event Generation
+→ Producer
+→ Topic
+→ Consumer
+→ AIOps Output
+
+## Reproduction Steps
+
+[Actual commands]
+
+## Evidence
+
+Screenshots were captured for the important execution and validation steps.
+
+## Conclusion
+
+The workflow was executed and validated using the provided Python-based
+simulation.
+
+⚠️ [Actual issue] mein imaginary bug nahi likhna. Jo actual problem milegi wahi likhenge.
+
+29. README save karke check
+git diff README.md
+
+Agar correct hai:
+
+git status
+30. Final commit
+
+Agar all tasks complete hain:
+
+git add .
+
+Then:
+
+git commit -m "feat: complete aiops practical assessment"
+31. Push to YOUR FORK
+
+Very important:
+
+git push origin main
+
+Check:
+
+git status
+
+Expected:
+
+Your branch is up to date with 'origin/main'.
+nothing to commit, working tree clean
+32. Verify GitHub
+
+Browser mein:
+
+GitHub → khushhal4545/aiops-exam-369874125
+
+Check:
+
+files updated
+README updated
+commits visible
+code changes visible
+33. Pull Request — LAST STEP
+
+Abhi PR mat banana.
+
+Sab kuch complete hone ke baad GitHub repository mein:
+
+Contribute / Pull requests → New pull request
+
+Check:
+
+base repository
+        ↓
+original teacher repository
+
+head repository
+        ↓
+khushhal4545/aiops-exam-369874125
+
+PR ka direction YOUR FORK → ORIGINAL REPOSITORY hona chahiye, agar teacher ne wahi required kiya hai.
+
+🔥 Tumhare liye actual execution order
+
+Isko simply yaad rakho:
+
+1. Open Codespace
+       ↓
+2. pwd
+       ↓
+3. ls
+       ↓
+4. find . -maxdepth 3 -type f | sort
+       ↓
+5. git status
+       ↓
+6. Python / pip check
+       ↓
+7. requirements install
+       ↓
+8. Task 1 inspect + run
+       ↓
+9. Task 1 commit + push
+       ↓
+10. Task 2 inspect + run
+       ↓
+11. Task 2 commit + push
+       ↓
+12. Task 3 Airflow inspect + run
+       ↓
+13. Task 3 commit + push
+       ↓
+14. Task 4 Kafka inspect + run
+       ↓
+15. Task 4 commit + push
+       ↓
+16. Full workflow validation
+       ↓
+17. README update
+       ↓
+18. Tests
+       ↓
+19. git diff / git status
+       ↓
+20. final commit
+       ↓
+21. git push
+       ↓
+22. Pull Request
+Abhi sirf ye 5 commands chalao
+
+Codespace ke terminal mein:
+
+pwd
+ls
+find . -maxdepth 3 -type f | sort
+python --version
+git status
